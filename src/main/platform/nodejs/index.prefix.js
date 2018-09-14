@@ -21,23 +21,24 @@ global.Class = {
 
 // Use CPUID to get the available processor extensions
 // and choose the right version of the nimiq_node native module
-const cpuSupport = function() {
+const NodeNative = function() {
     try {
         const c = cpuid();
         const f = c.features;
 
+        const optimized = [ 'avx512f', 'avx2', 'sse2' ]
 
-        if (f['avx512f'])
-            return "avx512f";
-        if (f['avx2'])
-            return "avx2";
-        if (f['sse2'])
-            return "sse2";
-        else
-            return "compat";
+        for (let ext in optimized) {
+            if (f[ext]) {
+                try {
+                    return require('bindings')('nimiq_node_' + ext + '.node');
+                } catch (e) {
+                    continue;
+                }
+            }
+        }
+        throw Error("no optimized version");
     } catch (e) {
-        return "compat";
+        return require('bindings')('nimiq_node_compat.node');
     }
 }();
-
-const NodeNative = require('bindings')('nimiq_node_' + cpuSupport + '.node');
