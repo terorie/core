@@ -86,9 +86,8 @@ class Miner extends Observable {
         if (typeof navigator === 'object' && navigator.hardwareConcurrency) {
             this.threads = Math.ceil(navigator.hardwareConcurrency / 2);
         } else if (PlatformUtils.isNodeJs()) {
-            const cores = require('os').cpus().length;
-            this.threads = Math.ceil(cores / 2);
-            if (cores === 1) this.throttleAfter = 2;
+            this.threads = NodeNative.node_core_count();
+            if (this.threads === 1) this.throttleAfter = 2;
         } else {
             this.threads = 1;
         }

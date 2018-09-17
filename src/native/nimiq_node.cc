@@ -1,4 +1,5 @@
 #include <nan.h>
+#include <thread>
 extern "C" {
 #include "nimiq_native.h"
 #include "ed25519/ed25519.h"
@@ -289,6 +290,11 @@ NAN_METHOD(node_ed25519_delinearized_partial_sign) {
     ed25519_delinearized_partial_sign(out, message, message_length, commitment, secret, keys, keys_length, pubkey, privkey);
 }
 
+NAN_METHOD(node_core_count) {
+    unsigned int n_cores = std::thread::hardware_concurrency();
+    info.GetReturnValue().Set(New<Number>(n_cores));
+}
+
 NAN_MODULE_INIT(Init) {
     Set(target, New<String>("node_argon2_target_async").ToLocalChecked(),
         GetFunction(New<FunctionTemplate>(node_argon2_target_async)).ToLocalChecked());
@@ -326,6 +332,8 @@ NAN_MODULE_INIT(Init) {
         GetFunction(New<FunctionTemplate>(node_ed25519_derive_delinearized_private_key)).ToLocalChecked());
     Set(target, New<String>("node_ed25519_delinearized_partial_sign").ToLocalChecked(),
         GetFunction(New<FunctionTemplate>(node_ed25519_delinearized_partial_sign)).ToLocalChecked());
+    Set(target, New<String>("node_core_count").ToLocalChecked(),
+        GetFunction(New<FunctionTemplate>(node_core_count)).ToLocalChecked());
 }
 
 NODE_MODULE(nimiq_node, Init)
