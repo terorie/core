@@ -116,22 +116,6 @@ int nimiq_kdf(void *out, const void *in, const size_t inlen, const void* seed, c
     return ARGON2_OK;
 }
 
-uint32_t nimiq_argon2_target(void *out, void *in, const size_t inlen, const uint32_t compact, const uint32_t min_nonce, const uint32_t max_nonce, const uint32_t m_cost) {
-    uint32_t* noncer = (uint32_t*)(((uint8_t*)in)+inlen-4);
-    uint256 target = uint256_new(), hash = uint256_new();
-    uint256_set_compact(target, compact);
-    for(noncer[0] = htonl(min_nonce); ntohl(noncer[0]) < max_nonce; noncer[0] = htonl(ntohl(noncer[0])+1)) {
-        nimiq_argon2_no_wipe(out, in, inlen, m_cost);
-        uint256_set_bytes(hash, out);
-        if (uint256_compare(target, hash) > 0) {
-            break;
-        }
-    }
-    free(hash);
-    free(target);
-    return ntohl(noncer[0]);
-}
-
 int nimiq_argon2_verify(const void *hash, const void *in, const size_t inlen, const uint32_t m_cost) {
     void* out = malloc(32);
     nimiq_argon2(out, in, inlen, m_cost);
