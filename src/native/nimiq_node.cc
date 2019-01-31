@@ -248,8 +248,6 @@ NAN_METHOD(node_ed25519_delinearized_partial_sign) {
 }
 
 NAN_MODULE_INIT(Init) {
-    Set(target, New<String>("node_argon2_target_async").ToLocalChecked(),
-        GetFunction(New<FunctionTemplate>(node_argon2_target_async)).ToLocalChecked());
     Set(target, New<String>("node_sha256").ToLocalChecked(),
         GetFunction(New<FunctionTemplate>(node_sha256)).ToLocalChecked());
     Set(target, New<String>("node_sha512").ToLocalChecked(),
