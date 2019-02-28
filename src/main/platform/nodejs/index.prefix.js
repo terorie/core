@@ -42,7 +42,12 @@ function detectAddOn() {
         }
     }();
 
-    let NodeNative = NodeNativeTry || require('bindings')(`nimiq_node_${cpuSupport}.node`);
+    let NodeNative;
+    try {
+        NodeNative = NodeNativeTry || require('bindings')(`nimiq_node_${cpuSupport}.node`);
+    } catch (e) {
+        NodeNative = require('bindings')(`nimiq_node_compat.node`);
+    }
 
     return {NodeNative, cpuSupport};
 }
