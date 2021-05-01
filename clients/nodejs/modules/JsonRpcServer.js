@@ -133,6 +133,8 @@ class JsonRpcServer {
         this._methods.set('getBlockTransactionCountByNumber', this.getBlockTransactionCountByNumber.bind(this));
         this._methods.set('getBlockByHash', this.getBlockByHash.bind(this));
         this._methods.set('getBlockByNumber', this.getBlockByNumber.bind(this));
+        this._methods.set('getSerializedBlockByHash', this.getSerializedBlockByHash.bind(this));
+        this._methods.set('getSerializedBlockByNumber', this.getSerializedBlockByNumber.bind(this));
 
         this._methods.set('constant', this.constant.bind(this));
         this._methods.set('log', this.log.bind(this));
@@ -608,6 +610,15 @@ class JsonRpcServer {
         return block ? this._blockToObj(block, includeTransactions) : null;
     }
 
+    async getSerializedBlockByNumber(number) {
+        const block = await this._getBlockByNumber(number);
+        return block ? Nimiq.BufferUtils.toHex(block.serialize()) : null;
+    }
+
+    async getSerializedBlockByHash(blockHash) {
+        const block = await this._client.getBlock(Nimiq.Hash.fromString(blockHash), true);
+        return block ? Nimiq.BufferUtils.toHex(block.serialize()) : null;
+    }
 
     /*
      * Utils
